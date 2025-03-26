@@ -1,77 +1,75 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Divider from '@mui/material/Divider';
-import Typography from '@mui/material/Typography';
+import { AppBar, Toolbar, IconButton, Drawer, List, ListItem, ListItemText, Typography, Box, Divider } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 export default function AccountMenu() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const navigate = useNavigate(); // React Router navigation hook
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const navigate = useNavigate();
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  // Function to navigate
   const handleNavigate = (path) => {
     navigate(path);
-    handleClose();
+    setDrawerOpen(false); 
   };
 
-  
   return (
-    <React.Fragment>
-      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Typography 
-          sx={{ minWidth: 100, cursor: 'pointer' }} 
-          onClick={() => handleNavigate('/home')}
+    <AppBar 
+      position="static" 
+      sx={{ backgroundColor: 'grey' }} 
+    >
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        
+        <IconButton 
+          onClick={() => setDrawerOpen(true)} 
+          sx={{ display: { xs: 'block', md: 'none' }, color: 'white' }} 
         >
-          Home
-        </Typography>
-        <Typography 
-          sx={{ minWidth: 100, cursor: 'pointer' }} 
-          onClick={() => handleNavigate('/vestigingen')}
-        >
-          Vestigingen
-        </Typography>
-        <Typography 
-          sx={{ minWidth: 100, cursor: 'pointer' }} 
-          onClick={() => handleNavigate('/films')}
-        >
-          Films
-        </Typography>
-        <Typography 
-          sx={{ minWidth: 100, cursor: 'pointer' }} 
-          onClick={() => handleNavigate('/recensies')}
-        >
-          Recensies
-        </Typography>
-      </Box>
+          <MenuIcon />
+        </IconButton>
 
-      {/* Dropdown Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          elevation: 3,
-          sx: { mt: 1.5 },
-        }}
+        
+        <Box 
+          sx={{
+            display: { xs: 'none', md: 'flex' }, 
+            justifyContent: 'center', 
+            flexGrow: 1,
+            gap: 4 
+          }}
+        >
+          {['Home', 'Vestigingen', 'Films', 'Recensies'].map((label) => (
+            <Typography 
+              key={label} 
+              sx={{ 
+                cursor: 'pointer', 
+                color: 'white', 
+                '&:hover': { color: '#f1c40f' } 
+              }} 
+              onClick={() => handleNavigate(`/${label.toLowerCase()}`)}
+            >
+              {label}
+            </Typography>
+          ))}
+        </Box>
+      </Toolbar>
+
+      
+      <Drawer
+        anchor="left" 
+        open={drawerOpen} 
+        onClose={() => setDrawerOpen(false)}
+        PaperProps={{ sx: { backgroundColor: '#34495e', color: 'white' } }} 
       >
-        <MenuItem onClick={() => handleNavigate('/home')}>Home</MenuItem>
-        <MenuItem onClick={() => handleNavigate('/vestigingen')}>Vestigingen</MenuItem>
-        <MenuItem onClick={() => handleNavigate('/films')}>Films</MenuItem>
-        <MenuItem onClick={() => handleNavigate('/recensies')}>Recensies</MenuItem>
-        <Divider />
-        <MenuItem onClick={() => handleNavigate('/logout')}>Logout</MenuItem>
-      </Menu>
-    </React.Fragment>
+        <List sx={{ width: 250 }}>
+          {['Home', 'Vestigingen', 'Films', 'Recensies'].map((label) => (
+            <ListItem button key={label} onClick={() => handleNavigate(`/${label.toLowerCase()}`)}>
+              <ListItemText 
+                primary={label} 
+                sx={{ '& span': { color: 'white' } }} 
+              />
+            </ListItem>
+          ))}
+          <Divider />
+        </List>
+      </Drawer>
+    </AppBar>
   );
 }
